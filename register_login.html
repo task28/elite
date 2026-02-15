@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task28 Elite - Access</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+    <style>
+        body {
+            background: #0a0a0a;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 85%;
+            max-width: 400px;
+            background: #141414;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            border: 1px solid #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #333;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            width: 50%;
+            text-align: center;
+            transition: 0.3s;
+            color: #666;
+            font-weight: bold;
+        }
+        .tab.active {
+            border-bottom: 2px solid #ffd700;
+            color: #ffd700;
+        }
+        .form-group { margin-bottom: 15px; }
+        input {
+            width: 100%;
+            padding: 14px;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #ffd700;
+            background: #252525;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            border: none;
+            color: black;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+        button:hover { transform: scale(0.98); }
+        .hidden { display: none; }
+        .error { color: #ff4444; font-size: 12px; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">TASK28</div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('login')">LOGIN</div>
+        <div class="tab" onclick="switchTab('register')">REGISTER</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+        <div class="form-group"><input type="number" id="loginPhone" placeholder="Phone Number"></div>
+        <div class="form-group"><input type="password" id="loginPass" placeholder="Password"></div>
+        <button onclick="loginUser()">Login Account</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="hidden">
+        <div class="form-group"><input type="text" id="regFname" placeholder="First Name"></div>
+        <div class="form-group"><input type="text" id="regLname" placeholder="Last Name"></div>
+        <div class="form-group"><input type="number" id="regPhone" placeholder="Phone Number"></div>
+        <div class="form-group"><input type="password" id="regPass" placeholder="Password"></div>
+        <div class="form-group"><input type="password" id="regConfPass" placeholder="Confirm Password"></div>
+        <div class="form-group"><input type="text" id="regRef" placeholder="Referral Code (Optional)"></div>
+        <button onclick="registerUser()">Create Account</button>
+    </div>
+    
+    <div id="msg" class="error"></div>
+</div>
+
+<script>
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXMFqxIe8IrZkzUx2YVMTvVXQmIAhtruc",
+        authDomain: "love-1-6cdb1.firebaseapp.com",
+        databaseURL: "https://love-1-6cdb1-default-rtdb.firebaseio.com",
+        projectId: "love-1-6cdb1",
+        storageBucket: "love-1-6cdb1.firebasestorage.app",
+        messagingSenderId: "949848083048",
+        appId: "1:949848083048:web:ced52526264da1dcf4c9dd"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function switchTab(tab) {
+        document.getElementById('msg').innerText = "";
+        const loginForm = document.getElementById('loginForm');
+        const regForm = document.getElementById('registerForm');
+        const tabs = document.querySelectorAll('.tab');
+
+        if(tab === 'login') {
+            loginForm.classList.remove('hidden');
+            regForm.classList.add('hidden');
+            tabs[0].classList.add('active');
+            tabs[1].classList.remove('active');
+        } else {
+            loginForm.classList.add('hidden');
+            regForm.classList.remove('hidden');
+            tabs[0].classList.remove('active');
+            tabs[1].classList.add('active');
+        }
+    }
+
+    function registerUser() {
+        const fname = document.getElementById('regFname').value;
+        const lname = document.getElementById('regLname').value;
+        const phone = document.getElementById('regPhone').value;
+        const pass = document.getElementById('regPass').value;
+        const confPass = document.getElementById('regConfPass').value;
+        const refCode = document.getElementById('regRef').value || "ADMIN";
+
+        if(pass !== confPass) { document.getElementById('msg').innerText = "Passwords do not match!"; return; }
+        if(phone.length < 11) { document.getElementById('msg').innerText = "Invalid Phone Number!"; return; }
+
+        const email = phone + "@task28.com";
+
+        auth.createUserWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                db.ref('users/' + user.uid).set({
+                    firstName: fname,
+                    lastName: lname,
+                    phone: phone,
+                    password: pass,
+                    referralCode: refCode,
+                    myReferralCode: "REF" + Math.floor(1000 + Math.random() * 9000),
+                    balance: 0,
+                    lifetimeBalance: 0,
+                    totalReferrals: 0,
+                    todayReferrals: 0,
+                    tasksCompleted: 0,
+                    status: "pending",
+                    accountActive: false
+                }).then(() => {
+                    window.location.href = "home.html";
+                });
+            })
+            .catch((error) => { document.getElementById('msg').innerText = error.message; });
+    }
+
+    function loginUser() {
+        const phone = document.getElementById('loginPhone').value;
+        const pass = document.getElementById('loginPass').value;
+        const email = phone + "@task28.com";
+
+        auth.signInWithEmailAndPassword(email, pass)
+            .then(() => { window.location.href = "home.html"; })
+            .catch((error) => { document.getElementById('msg').innerText = "Login Failed: Check credentials"; });
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (user) { window.location.href = "home.html"; }
+    });
+</script>
+
+</body>
+</html>
