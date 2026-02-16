@@ -9,97 +9,100 @@
     
     <style>
         :root {
-            --primary-gold: #D4AF37;
+            --primary-gold: #FFC107;
             --bg-dark: #0f0f0f;
             --card-bg: #1a1a1a;
             --text-white: #ffffff;
             --text-gray: #b0b0b0;
             --danger: #ff4d4d;
-            --success: #00ff88;
-            --warning: #ffb700;
+            --success: #00ff88; /* Neon Green */
+            --border-color: #333;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 50px; }
 
-        /* Header */
-        .header { display: flex; align-items: center; padding: 15px 20px; background: rgba(20, 20, 20, 0.95); border-bottom: 1px solid rgba(212, 175, 55, 0.2); position: sticky; top: 0; z-index: 100; }
+        /* --- Header --- */
+        .header { display: flex; align-items: center; padding: 15px 20px; background: rgba(20, 20, 20, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
         .back-btn { color: #fff; font-size: 1.2rem; margin-right: 15px; text-decoration: none; }
-        .title { font-size: 1.1rem; font-weight: 700; color: var(--primary-gold); }
+        .title { font-size: 1rem; font-weight: 700; color: var(--primary-gold); text-transform: uppercase; }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 20px; }
-        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-val { font-size: 1.5rem; font-weight: bold; display: block; }
-        .stat-label { font-size: 0.75rem; color: var(--text-gray); text-transform: uppercase; }
-        .s-success { color: var(--success); border-bottom: 2px solid var(--success); }
-        .s-failed { color: var(--danger); border-bottom: 2px solid var(--danger); }
-        .s-pending { color: var(--warning); border-bottom: 2px solid var(--warning); }
-        .s-missing { color: #888; border-bottom: 2px solid #888; }
-
-        /* Task Area */
-        .task-container { margin: 0 20px; min-height: 400px; position: relative; }
-
-        /* State: Idle (Apply Button) */
-        #applySection { text-align: center; padding-top: 50px; }
-        .apply-btn {
-            background: linear-gradient(135deg, #D4AF37, #B8860B);
-            color: #000; border: none; padding: 15px 40px; border-radius: 30px;
-            font-size: 1.2rem; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-            transition: 0.3s;
-        }
-        .apply-btn:active { transform: scale(0.95); }
-        .loader-text { margin-top: 20px; color: var(--primary-gold); display: none; }
-
-        /* State: Active Task */
-        #activeTaskSection { display: none; background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid var(--primary-gold); }
+        /* --- Stats Grid --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px 20px; }
+        .stat-box { background: var(--card-bg); padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #222; }
+        .stat-val { font-size: 1.3rem; font-weight: bold; display: block; margin-bottom: 2px; }
+        .stat-label { font-size: 0.65rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Timer */
-        .timer-box { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #2a2a2a; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; 
-            border: 1px solid var(--danger);
+        .s-success { border-bottom: 2px solid var(--success); } .s-success .stat-val { color: var(--success); }
+        .s-failed { border-bottom: 2px solid var(--danger); } .s-failed .stat-val { color: var(--danger); }
+        .s-pending { border-bottom: 2px solid var(--primary-gold); } .s-pending .stat-val { color: var(--primary-gold); }
+        .s-missing { border-bottom: 2px solid #777; } .s-missing .stat-val { color: #777; }
+
+        /* --- Container for Task Flow --- */
+        .container { padding: 0 20px 20px; }
+
+        /* 1. APPLY SECTION */
+        #applySection { text-align: center; padding-top: 60px; display: none; }
+        .apply-circle { width: 80px; height: 80px; background: #222; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary-gold); box-shadow: 0 0 20px rgba(255, 193, 7, 0.2); cursor: pointer; animation: pulse 2s infinite; }
+        .apply-circle i { font-size: 2rem; color: var(--primary-gold); }
+        .apply-text { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; }
+        .apply-sub { color: #666; font-size: 0.8rem; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); } }
+
+        /* 2. WAITING SECTION */
+        #waitingSection { text-align: center; padding-top: 80px; display: none; }
+        .loader { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--primary-gold); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 3. ACTIVE TASK CONTAINER (The Big Yellow Box) */
+        #activeSection { display: none; }
+        .task-card {
+            border: 1px solid var(--primary-gold);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* Timer Bar */
+        .timer-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 77, 77, 0.1); border: 1px solid var(--danger);
+            padding: 8px 12px; border-radius: 5px; margin-bottom: 15px;
         }
         .timer-label { font-size: 0.9rem; color: #fff; }
-        .timer-count { font-size: 1.2rem; font-weight: bold; color: var(--danger); font-family: monospace; }
+        .timer-val { font-size: 1.1rem; font-weight: bold; color: var(--danger); font-family: monospace; }
 
-        /* Data Fields */
-        .data-row { 
+        /* Data Field Rows */
+        .data-row {
+            background: #1F1F1F; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
-            background: #222; padding: 12px; margin-bottom: 10px; border-radius: 8px;
-            border-left: 3px solid var(--primary-gold);
         }
-        .data-info { display: flex; flex-direction: column; }
-        .data-label { font-size: 0.7rem; color: var(--text-gray); }
-        .data-value { font-size: 0.95rem; color: #fff; font-weight: 600; }
-        .copy-btn { color: var(--primary-gold); cursor: pointer; padding: 5px; font-size: 1.1rem; }
-        .copy-btn:active { color: #fff; }
+        .data-content { display: flex; flex-direction: column; }
+        .data-label { font-size: 0.65rem; color: #888; margin-bottom: 2px; }
+        .data-val { font-size: 0.95rem; font-weight: 600; color: #fff; word-break: break-all; }
+        .copy-btn { color: var(--primary-gold); padding: 5px; cursor: pointer; font-size: 1rem; }
+        .copy-btn:active { transform: scale(0.9); }
 
-        /* Submission Form */
-        .submission-form { margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; }
-        .sub-header { font-size: 1rem; color: #fff; margin-bottom: 15px; text-align: center; }
-        .inp-group { margin-bottom: 15px; }
-        .inp-field { 
-            width: 100%; padding: 12px; background: #000; border: 1px solid #444; 
-            color: #fff; border-radius: 8px; outline: none; transition: 0.3s;
-        }
-        .inp-field:focus { border-color: var(--primary-gold); }
-        .submit-btn {
-            width: 100%; padding: 12px; background: var(--success); color: #000;
-            font-weight: bold; border: none; border-radius: 8px; cursor: pointer;
-        }
-
-        /* State: Pending / Waiting */
-        #pendingSection { display: none; text-align: center; padding: 50px 20px; }
-        .pending-icon { font-size: 3rem; color: var(--warning); margin-bottom: 20px; }
+        /* Submit Form */
+        .submit-header { text-align: center; font-size: 0.9rem; margin: 20px 0 10px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .input-box { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; margin-bottom: 10px; outline: none; font-size: 0.9rem; }
+        .input-box:focus { border-color: var(--primary-gold); }
         
-        /* Modal for Copy */
-        .toast {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: #333; color: var(--primary-gold); padding: 10px 20px;
-            border-radius: 20px; opacity: 0; pointer-events: none; transition: 0.3s;
+        .btn-submit {
+            width: 100%; background: var(--success); color: #000; border: none; padding: 12px;
+            font-weight: 800; border-radius: 6px; font-size: 0.9rem; cursor: pointer;
+            text-transform: uppercase; margin-top: 5px;
         }
+        .btn-submit:active { opacity: 0.9; }
+
+        /* 4. PENDING MSG */
+        #pendingMsg { display: none; text-align: center; padding-top: 60px; }
+        .p-icon { font-size: 3rem; color: var(--primary-gold); margin-bottom: 15px; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: var(--primary-gold); padding: 8px 20px; border-radius: 20px; font-size: 0.8rem; opacity: 0; transition: 0.3s; pointer-events: none; }
         .toast.show { opacity: 1; bottom: 50px; }
 
     </style>
@@ -115,84 +118,82 @@
     <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-box s-success">
-            <span class="stat-val" id="countSuccess">0</span>
+            <span class="stat-val" id="cntSuccess">0</span>
             <span class="stat-label">Successful</span>
         </div>
         <div class="stat-box s-failed">
-            <span class="stat-val" id="countFailed">0</span>
+            <span class="stat-val" id="cntFailed">0</span>
             <span class="stat-label">Failed</span>
         </div>
         <div class="stat-box s-pending">
-            <span class="stat-val" id="countPending">0</span>
+            <span class="stat-val" id="cntPending">0</span>
             <span class="stat-label">Pending</span>
         </div>
         <div class="stat-box s-missing">
-            <span class="stat-val" id="countMissing">0</span>
+            <span class="stat-val" id="cntMissing">0</span>
             <span class="stat-label">Missing</span>
         </div>
     </div>
 
-    <!-- Task Container -->
-    <div class="task-container">
+    <div class="container">
         
-        <!-- SECTION 1: APPLY / GET TASK -->
+        <!-- 1. APPLY BUTTON -->
         <div id="applySection">
-            <div style="margin-bottom: 20px; color: #888; font-size: 0.9rem;">
-                Click apply to receive a new Gmail Task.<br>You have 13 minutes to complete.
+            <div class="apply-circle" onclick="applyTask()">
+                <i class="fas fa-play"></i>
             </div>
-            <button class="apply-btn" onclick="applyForTask()">
-                <i class="fas fa-play-circle"></i> APPLY NOW
-            </button>
-            <div id="searchingMsg" class="loader-text">
-                <i class="fas fa-spinner fa-spin"></i> Finding Task from Admin...
+            <div class="apply-text">APPLY FOR NEW TASK</div>
+            <div class="apply-sub">Click to notify admin you are ready</div>
+        </div>
+
+        <!-- 2. WAITING FOR ADMIN -->
+        <div id="waitingSection">
+            <div class="loader"></div>
+            <h3 style="color:#fff;">Finding Task...</h3>
+            <p style="color:#666; font-size:0.8rem; margin-top:10px;">Please wait while admin assigns a task.</p>
+        </div>
+
+        <!-- 3. ACTIVE TASK (Based on Screenshot) -->
+        <div id="activeSection">
+            <div class="task-card">
+                
+                <!-- Timer -->
+                <div class="timer-bar">
+                    <span class="timer-label">Time Remaining:</span>
+                    <span class="timer-val" id="timerDisplay">13:00</span>
+                </div>
+
+                <!-- Dynamic Data -->
+                <div id="taskFields">
+                    <!-- Javascript will inject rows here -->
+                </div>
+
+                <!-- Submit Form -->
+                <div class="submit-header">SUBMIT WORK PROOF</div>
+                <input type="email" id="subEmail" class="input-box" placeholder="Created Email Address">
+                <input type="text" id="subPass" class="input-box" placeholder="Password Used">
+                <button class="btn-submit" onclick="submitWork()">SUBMIT TASK</button>
+
             </div>
         </div>
 
-        <!-- SECTION 2: ACTIVE TASK DISPLAY -->
-        <div id="activeTaskSection">
-            <div class="timer-box">
-                <span class="timer-label">Time Remaining:</span>
-                <span class="timer-count" id="timerDisplay">13:00</span>
-            </div>
-
-            <!-- Dynamic Data Fields -->
-            <div id="taskDataList">
-                <!-- Fields will be injected here via JS -->
-            </div>
-
-            <!-- Submission -->
-            <div class="submission-form">
-                <div class="sub-header">SUBMIT WORK PROOF</div>
-                <div class="inp-group">
-                    <input type="email" id="submitEmail" class="inp-field" placeholder="Created Email Address">
-                </div>
-                <div class="inp-group">
-                    <input type="text" id="submitPass" class="inp-field" placeholder="Password Used">
-                </div>
-                <button class="submit-btn" onclick="submitTask()">SUBMIT TASK</button>
-            </div>
-        </div>
-
-        <!-- SECTION 3: PENDING VIEW -->
-        <div id="pendingSection">
-            <i class="fas fa-clock pending-icon"></i>
-            <h3>Submission Received</h3>
-            <p style="color:#aaa; font-size:0.9rem; margin-top:10px;">
-                Admin is reviewing your task.<br>Please wait for approval.
-            </p>
-            <button onclick="checkStatus()" style="margin-top:20px; background:none; border:1px solid #555; color:#fff; padding:10px 20px; border-radius:5px;">Refresh Status</button>
+        <!-- 4. SUBMITTED / PENDING REVIEW -->
+        <div id="pendingMsg">
+            <i class="fas fa-check-circle p-icon"></i>
+            <h3>Task Submitted!</h3>
+            <p style="color:#aaa; font-size:0.8rem; margin-top:10px;">Admin is reviewing your proof.</p>
+            <button onclick="window.location.reload()" style="margin-top:20px; background:transparent; border:1px solid #444; color:#fff; padding:8px 20px; border-radius:4px;">Check Status</button>
         </div>
 
     </div>
 
-    <!-- Copy Toast -->
-    <div id="toast" class="toast">Copied to clipboard!</div>
+    <div id="toast" class="toast">Copied!</div>
 
-    <!-- Firebase Logic -->
+    <!-- Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, set, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBCMLtk6Nm4oK1Rt6InUQ4EeWFC3mTBeaA",
@@ -203,227 +204,158 @@
             messagingSenderId: "352060113315",
             appId: "1:352060113315:web:c44977d17cf7bab791da16"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUser = null;
-        let timerInterval = null;
-        let currentTaskData = null;
+        let uid = null;
+        let timerInt = null;
 
-        // --- AUTH CHECK ---
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
+            if(user) {
+                uid = user.uid;
                 loadStats();
-                checkCurrentTask();
+                checkTaskStatus();
             } else {
                 window.location.href = "register_login.html";
             }
         });
 
-        // --- LOAD STATS ---
         function loadStats() {
-            const statsRef = ref(db, `users/${currentUser.uid}/task_stats`);
-            onValue(statsRef, (snapshot) => {
-                const data = snapshot.val() || { success: 0, failed: 0, pending: 0, missing: 0 };
-                document.getElementById('countSuccess').innerText = data.success;
-                document.getElementById('countFailed').innerText = data.failed;
-                document.getElementById('countPending').innerText = data.pending;
-                document.getElementById('countMissing').innerText = data.missing;
+            onValue(ref(db, `users/${uid}/task_stats`), (snap) => {
+                const s = snap.val() || { success:0, failed:0, pending:0, missing:0 };
+                document.getElementById('cntSuccess').innerText = s.success;
+                document.getElementById('cntFailed').innerText = s.failed;
+                document.getElementById('cntPending').innerText = s.pending;
+                document.getElementById('cntMissing').innerText = s.missing;
             });
         }
 
-        // --- CHECK CURRENT TASK STATUS ---
-        function checkCurrentTask() {
-            const taskRef = ref(db, `users/${currentUser.uid}/current_task`);
-            onValue(taskRef, (snapshot) => {
-                const task = snapshot.val();
+        function checkTaskStatus() {
+            onValue(ref(db, `users/${uid}/current_task`), (snap) => {
+                const task = snap.val();
                 
-                // Clear UI States
+                // Hide All Sections First
                 document.getElementById('applySection').style.display = 'none';
-                document.getElementById('activeTaskSection').style.display = 'none';
-                document.getElementById('pendingSection').style.display = 'none';
+                document.getElementById('waitingSection').style.display = 'none';
+                document.getElementById('activeSection').style.display = 'none';
+                document.getElementById('pendingMsg').style.display = 'none';
 
-                if (!task || task.status === 'idle') {
-                    // Show Apply Button
+                if(!task || task.status === 'idle') {
+                    // 1. Show Apply
                     document.getElementById('applySection').style.display = 'block';
-                    document.getElementById('searchingMsg').style.display = 'none';
                 } 
                 else if (task.status === 'searching') {
-                     // Searching State
-                     document.getElementById('applySection').style.display = 'block';
-                     document.getElementById('searchingMsg').style.display = 'block';
-                     document.querySelector('.apply-btn').style.display = 'none';
+                    // 2. Show Waiting (Sent to Admin)
+                    document.getElementById('waitingSection').style.display = 'block';
                 }
                 else if (task.status === 'active') {
-                    // Check Timer
+                    // 3. Show Active Task (Admin sent data)
                     const now = Date.now();
-                    if (now > task.expiresAt) {
-                        handleTaskMissing();
+                    if(now > task.expiresAt) {
+                        markMissing();
                     } else {
-                        currentTaskData = task.data;
-                        renderTaskData(task.data);
-                        document.getElementById('activeTaskSection').style.display = 'block';
+                        renderFields(task.data);
                         startTimer(task.expiresAt);
+                        document.getElementById('activeSection').style.display = 'block';
                     }
-                } 
+                }
                 else if (task.status === 'submitted') {
-                    // Show Pending Msg
-                    document.getElementById('pendingSection').style.display = 'block';
+                    // 4. Show Pending Review
+                    document.getElementById('pendingMsg').style.display = 'block';
                 }
             });
         }
 
-        // --- APPLY FOR TASK ---
-        window.applyForTask = () => {
-            document.querySelector('.apply-btn').style.display = 'none';
-            document.getElementById('searchingMsg').style.display = 'block';
-
-            // Set status to searching in DB
-            update(ref(db, `users/${currentUser.uid}/current_task`), {
-                status: 'searching'
-            });
-
-            // ⚠️ SIMULATION: Normally Admin assigns this. 
-            // Here, we simulate Admin assigning a task after 3 seconds for demo.
-            setTimeout(() => {
-                const fakeTask = {
-                    firstName: "Rahim",
-                    lastName: "Uddin",
-                    password: "TaskPassword2024",
-                    birthdate: "12/05/1998",
-                    email: "requested.username12",
-                    recoveryEmail: "", // Empty to test hiding
-                };
-                
-                // Admin assigns task (Update DB)
-                const expiresAt = Date.now() + (13 * 60 * 1000); // 13 mins from now
-                set(ref(db, `users/${currentUser.uid}/current_task`), {
-                    status: 'active',
-                    expiresAt: expiresAt,
-                    data: fakeTask
-                });
-            }, 3000);
+        // Apply Button Action
+        window.applyTask = () => {
+            update(ref(db, `users/${uid}/current_task`), { status: 'searching' });
         };
 
-        // --- RENDER TASK DATA ---
-        function renderTaskData(data) {
-            const container = document.getElementById('taskDataList');
-            container.innerHTML = ''; // Clear prev
+        // Render Data from Admin
+        function renderFields(data) {
+            const container = document.getElementById('taskFields');
+            container.innerHTML = '';
+            
+            // Map keys to labels
+            const labels = {
+                firstName: "First Name", lastName: "Last Name", 
+                password: "Password", birthdate: "Birthdate", 
+                email: "Requested Email User", recoveryEmail: "Recovery Email"
+            };
 
-            const fields = [
-                { key: 'firstName', label: 'First Name' },
-                { key: 'lastName', label: 'Last Name' },
-                { key: 'password', label: 'Password' },
-                { key: 'birthdate', label: 'Birthdate' },
-                { key: 'email', label: 'Requested Email User' },
-                { key: 'recoveryEmail', label: 'Recovery Email' }
-            ];
-
-            fields.forEach(field => {
-                if (data[field.key] && data[field.key] !== "") {
-                    const html = `
+            for (const [key, val] of Object.entries(data)) {
+                if(val && labels[key]) {
+                    container.innerHTML += `
                         <div class="data-row">
-                            <div class="data-info">
-                                <span class="data-label">${field.label}</span>
-                                <span class="data-value" id="val-${field.key}">${data[field.key]}</span>
+                            <div class="data-content">
+                                <span class="data-label">${labels[key]}</span>
+                                <span class="data-val" id="v-${key}">${val}</span>
                             </div>
-                            <div class="copy-btn" onclick="copyText('val-${field.key}')">
+                            <div class="copy-btn" onclick="copyTxt('v-${key}')">
                                 <i class="far fa-copy"></i>
                             </div>
                         </div>
                     `;
-                    container.innerHTML += html;
                 }
-            });
+            }
         }
 
-        // --- TIMER LOGIC ---
-        function startTimer(endTime) {
-            if (timerInterval) clearInterval(timerInterval);
+        // Submit Action
+        window.submitWork = async () => {
+            const email = document.getElementById('subEmail').value;
+            const pass = document.getElementById('subPass').value;
             
-            function updateTimer() {
-                const now = Date.now();
-                const distance = endTime - now;
+            if(!email || !pass) return alert("Fill in email and password!");
 
-                if (distance < 0) {
-                    clearInterval(timerInterval);
+            await update(ref(db, `users/${uid}/current_task`), {
+                status: 'submitted',
+                submission: { email, password: pass }
+            });
+
+            // Optimistic update for pending stat
+            const sRef = ref(db, `users/${uid}/task_stats`);
+            const sSnap = await get(sRef);
+            let s = sSnap.val() || {};
+            update(sRef, { pending: (s.pending||0) + 1 });
+        };
+
+        // Timer
+        function startTimer(end) {
+            if(timerInt) clearInterval(timerInt);
+            const tick = () => {
+                const now = Date.now();
+                const diff = end - now;
+                if(diff <= 0) {
+                    clearInterval(timerInt);
                     document.getElementById('timerDisplay').innerText = "00:00";
-                    handleTaskMissing();
+                    markMissing();
                     return;
                 }
-
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const m = Math.floor(diff/60000);
+                const s = Math.floor((diff%60000)/1000);
                 document.getElementById('timerDisplay').innerText = 
-                    (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-            }
-
-            updateTimer(); // Run once immediately
-            timerInterval = setInterval(updateTimer, 1000);
+                    `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            };
+            tick();
+            timerInt = setInterval(tick, 1000);
         }
 
-        // --- HANDLE MISSING TASK ---
-        async function handleTaskMissing() {
-            // Update stats
-            const statsRef = ref(db, `users/${currentUser.uid}/task_stats`);
-            const snapshot = await get(statsRef);
-            let stats = snapshot.val() || { missing: 0 };
-            stats.missing = (stats.missing || 0) + 1;
-            
-            await update(statsRef, { missing: stats.missing });
-            
-            // Reset Task Status
-            await update(ref(db, `users/${currentUser.uid}/current_task`), {
-                status: 'idle',
-                data: null,
-                expiresAt: 0
-            });
-
-            alert("Time Expired! Task marked as Missing.");
+        async function markMissing() {
+            update(ref(db, `users/${uid}/current_task`), { status: 'idle', data: null, expiresAt: 0 });
+            const sRef = ref(db, `users/${uid}/task_stats`);
+            const sSnap = await get(sRef);
+            let s = sSnap.val() || {};
+            update(sRef, { missing: (s.missing||0) + 1 });
+            alert("Time's up! Task marked as missing.");
         }
 
-        // --- SUBMIT TASK ---
-        window.submitTask = async () => {
-            const email = document.getElementById('submitEmail').value;
-            const pass = document.getElementById('submitPass').value;
-
-            if (!email || !pass) {
-                alert("Please fill both Email and Password fields.");
-                return;
-            }
-
-            // Update Status to Submitted
-            await update(ref(db, `users/${currentUser.uid}/current_task`), {
-                status: 'submitted',
-                submission: {
-                    email: email,
-                    password: pass,
-                    submittedAt: Date.now()
-                }
-            });
-            
-            // Increment Pending Count (Optimistic update)
-            const statsRef = ref(db, `users/${currentUser.uid}/task_stats`);
-            const snapshot = await get(statsRef);
-            let stats = snapshot.val() || { pending: 0 };
-            update(statsRef, { pending: (stats.pending || 0) + 1 });
-        };
-
-        // --- COPY FUNCTION ---
-        window.copyText = (elementId) => {
-            const text = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2000);
-            });
-        };
-
-        window.checkStatus = () => {
-            window.location.reload();
+        window.copyTxt = (id) => {
+            const t = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(t);
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1500);
         };
 
     </script>
