@@ -4,118 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Task28 Elite</title>
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary-gold: #D4AF37;
-            --secondary-gold: #FFFACD;
             --bg-dark: #0f0f0f;
             --card-bg: #1a1a1a;
             --text-white: #ffffff;
             --text-gray: #b0b0b0;
             --danger: #ff4d4d;
             --success: #00ff88;
+            --gmail-red: #EA4335;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-            padding-bottom: 80px; /* Space for footer/bottom */
-        }
-
-        /* --- Loading Overlay --- */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 3px solid rgba(212, 175, 55, 0.3);
-            border-top: 3px solid var(--primary-gold); border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* --- Header --- */
+        /* Header */
         .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px;
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
-        .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary-gold); letter-spacing: 1px; }
+        .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary-gold); }
         .header-icons { display: flex; gap: 15px; align-items: center; }
         .icon-btn { position: relative; font-size: 1.2rem; color: #fff; cursor: pointer; }
-        .badge {
-            position: absolute; top: -5px; right: -5px;
-            background: var(--danger); color: white;
-            font-size: 10px; width: 15px; height: 15px;
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            display: none;
-        }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 10px; width: 15px; height: 15px; border-radius: 50%; display: none; justify-content: center; align-items: center; }
+        .lang-switch { font-size: 0.8rem; padding: 4px 10px; border: 1px solid var(--primary-gold); border-radius: 20px; color: var(--primary-gold); cursor: pointer; }
 
-        /* --- Language Switch --- */
-        .lang-switch {
-            font-size: 0.8rem; padding: 4px 10px; border: 1px solid var(--primary-gold);
-            border-radius: 20px; color: var(--primary-gold); cursor: pointer;
-        }
-
-        /* --- Hero Balance Card --- */
+        /* Hero Balance */
         .hero-card {
-            background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
-            margin: 20px; padding: 20px; border-radius: 20px;
-            color: #000; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
-            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%); margin: 20px; padding: 20px;
+            border-radius: 20px; color: #000; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2); position: relative; overflow: hidden;
         }
-        .hero-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
-            transform: rotate(45deg); pointer-events: none;
-        }
-        .balance-label { font-size: 0.9rem; font-weight: 600; opacity: 0.8; }
+        .hero-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%); transform: rotate(45deg); pointer-events: none; }
         .balance-amount { font-size: 2.5rem; font-weight: 700; margin: 5px 0; }
         .sub-balance { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 10px; }
         .sb-item span { display: block; font-size: 0.8rem; font-weight: 600; }
-        .sb-item small { font-size: 0.7rem; opacity: 0.8; }
 
-        /* --- Status Bar --- */
+        /* Status Bar */
         .status-wrapper { margin: 0 20px 15px; }
-        .status-box {
-            background: #222; border: 1px solid #333; padding: 10px; border-radius: 10px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .status-icon {
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
-        }
+        .status-box { background: #222; border: 1px solid #333; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
+        .status-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
         .pending .status-icon { background: rgba(255, 77, 77, 0.2); color: var(--danger); }
         .active .status-icon { background: rgba(0, 255, 136, 0.2); color: var(--success); }
-        .status-text h4 { font-size: 0.9rem; color: #fff; }
-        .status-text p { font-size: 0.7rem; color: var(--text-gray); }
 
-        /* --- Banner Slider --- */
+        /* Banner Slider */
         .banner-section { margin: 0 20px 20px; position: relative; height: 160px; border-radius: 15px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.3); }
         .slides { display: flex; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; }
-        .slide { min-width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-size: cover; background-position: center; position: relative; }
-        .slide-content { z-index: 2; text-align: center; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 10px; border: 1px solid var(--primary-gold); }
+        .slide { min-width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-size: cover; background-position: center; }
         .dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; }
         .dot.active { background: var(--primary-gold); width: 20px; border-radius: 10px; }
 
-        /* --- Action Grid (Buttons) --- */
+        /* --- EXACT DESIGN: GMAIL TASK BUTTON --- */
+        .task-wrapper {
+            padding: 0 20px 20px;
+        }
+        .start-task-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1a1a1a; /* Dark Background */
+            border: 1px solid var(--primary-gold); /* Gold Border */
+            border-radius: 15px;
+            padding: 25px 0;
+            text-decoration: none;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+        .start-task-btn:active { transform: scale(0.98); }
+        
+        /* Gmail Badge (Pill Shape) */
+        .gmail-pill {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .gmail-pill i { color: var(--gmail-red); font-size: 1rem; }
+        .gmail-pill span { color: #fff; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.5px; }
+
+        /* White Play Circle with Glow */
+        .play-circle {
+            width: 55px;
+            height: 55px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 30px rgba(212, 175, 55, 0.4);
+            margin-bottom: 15px;
+            animation: glow-pulse 2s infinite;
+        }
+        .play-circle i {
+            color: #8B6508; /* Dark Gold/Brownish Icon */
+            font-size: 1.5rem;
+            margin-left: 4px; /* Optical adjustment */
+        }
+        
+        /* Start Task Text */
+        .task-text {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 40px rgba(212, 175, 55, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+        }
+
+        /* --- Rest of the Grid --- */
         .grid-container {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px 20px;
         }
@@ -125,64 +137,27 @@
             text-decoration: none; color: #fff; transition: 0.2s;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            position: relative; overflow: hidden;
         }
-        .card-btn:active { transform: scale(0.98); }
-        .card-btn i { font-size: 2rem; margin-bottom: 10px; color: var(--primary-gold); transition: 0.3s; }
-        .card-btn span { font-size: 0.9rem; font-weight: 500; text-align: center; }
+        .card-btn i { font-size: 1.8rem; margin-bottom: 10px; color: var(--primary-gold); }
+        .card-btn span { font-size: 0.8rem; font-weight: 500; text-align: center; }
         
-        /* Start Task Special Style */
-        .task-btn {
-            grid-column: span 2; background: linear-gradient(to right, #2c2c2c, #1a1a1a);
-            border: 1px solid var(--primary-gold);
-            animation: pulse-gold 2s infinite;
-        }
-        .task-btn i { font-size: 2.5rem; color: #fff; text-shadow: 0 0 10px var(--primary-gold); }
-        
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-        }
+        .locked { filter: grayscale(1); opacity: 0.6; pointer-events: none; position: relative; }
+        .locked::after { content: '\f023'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: 10px; right: 10px; color: var(--danger); }
 
-        /* Locked State */
-        .locked { filter: grayscale(1); opacity: 0.6; pointer-events: none; }
-        .locked::after {
-            content: '\f023'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
-            position: absolute; top: 10px; right: 10px; color: var(--danger); font-size: 1rem;
-        }
-
-        /* --- Stats Row --- */
-        .stats-row {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px;
-        }
-        .mini-stat {
-            background: #222; padding: 15px; border-radius: 12px; text-align: center;
-            border-bottom: 2px solid var(--primary-gold);
-        }
-        .mini-stat h3 { color: var(--primary-gold); font-size: 1.2rem; }
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
+        .mini-stat { background: #222; padding: 15px; border-radius: 12px; text-align: center; border-bottom: 2px solid var(--primary-gold); }
+        .mini-stat h3 { color: var(--primary-gold); }
         .mini-stat p { font-size: 0.7rem; color: var(--text-gray); }
 
-        /* --- Message Modal --- */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: #1e1e1e; padding: 25px; border-radius: 20px; width: 85%;
-            text-align: center; border: 1px solid var(--primary-gold);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-        }
-        .modal-title { color: var(--primary-gold); font-size: 1.2rem; margin-bottom: 10px; }
-        .timer-line { height: 4px; background: var(--primary-gold); width: 100%; margin-top: 20px; transition: width 1s linear; border-radius: 2px; }
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e1e1e; padding: 25px; border-radius: 20px; width: 85%; text-align: center; border: 1px solid var(--primary-gold); }
+        .timer-line { height: 4px; background: var(--primary-gold); width: 100%; margin-top: 20px; transition: width 1s linear; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-    <!-- Loader -->
-    <div id="loader"><div class="spinner"></div></div>
 
     <!-- Header -->
     <div class="header">
@@ -229,31 +204,31 @@
     <!-- Banner Slider -->
     <div class="banner-section">
         <div class="slides" id="bannerSlide">
-            <!-- Dynamic Banners -->
-            <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://img.freepik.com/free-vector/digital-money-transfer-technology-background_1017-17454.jpg');">
-                <div class="slide-content">
-                    <h3 style="color:#D4AF37">WELCOME TO ELITE</h3>
-                    <p style="color:#fff; font-size:0.8rem">Earn Daily with Task28</p>
-                </div>
-            </div>
-            <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg');">
-                 <div class="slide-content">
-                    <h3 style="color:#D4AF37">BIG REWARDS</h3>
-                    <p style="color:#fff; font-size:0.8rem">Refer & Earn Unlimited</p>
-                </div>
-            </div>
+            <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://img.freepik.com/free-vector/digital-money-transfer-technology-background_1017-17454.jpg');"></div>
+            <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg');"></div>
         </div>
         <div class="dots" id="bannerDots"></div>
     </div>
 
-    <!-- Main Grid Menu -->
-    <div class="grid-container">
-        <!-- Start Task (Always Unlocked) -->
-        <a href="task.html" class="card-btn task-btn">
-            <i class="fas fa-play-circle"></i>
-            <span data-en="START TASK" data-bn="টাস্ক শুরু করুন">START TASK</span>
+    <!-- START TASK BUTTON (EXACT DESIGN) -->
+    <div class="task-wrapper">
+        <a href="task.html" class="start-task-btn">
+            <!-- Top Pill -->
+            <div class="gmail-pill">
+                <i class="fab fa-google"></i> 
+                <span>Gmail Task</span>
+            </div>
+            <!-- Center Play Circle -->
+            <div class="play-circle">
+                <i class="fas fa-play"></i>
+            </div>
+            <!-- Bottom Text -->
+            <div class="task-text" data-en="START TASK" data-bn="টাস্ক শুরু করুন">START TASK</div>
         </a>
+    </div>
 
+    <!-- Other Menu Items Grid -->
+    <div class="grid-container">
         <!-- Withdraw -->
         <a href="withdraw.html" class="card-btn restricted locked">
             <i class="fas fa-wallet"></i>
@@ -282,6 +257,12 @@
         <a href="history.html" class="card-btn restricted locked">
             <i class="fas fa-history"></i>
             <span data-en="History" data-bn="ইতিহাস">History</span>
+        </a>
+        
+         <!-- Logout -->
+         <a onclick="logout()" class="card-btn" style="cursor: pointer; border-color: rgba(255,77,77,0.3);">
+            <i class="fas fa-power-off" style="color: #ff4d4d;"></i>
+            <span data-en="Logout" data-bn="লগআউট">Logout</span>
         </a>
     </div>
 
@@ -315,7 +296,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-        // Your Config
+        // Config
         const firebaseConfig = {
             apiKey: "AIzaSyBCMLtk6Nm4oK1Rt6InUQ4EeWFC3mTBeaA",
             authDomain: "task-elite.firebaseapp.com",
@@ -329,45 +310,38 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-
         let currentLang = localStorage.getItem('lang') || 'en';
         let adminMsgData = null;
 
-        // --- Init ---
+        // Init
         document.addEventListener('DOMContentLoaded', () => {
-            updateLangUI(); // Set initial lang
+            updateLangUI(); 
             setupBanner();
         });
 
-        // --- Auth & Data Loading ---
+        // Auth
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(db, 'users/' + user.uid);
                 onValue(userRef, (snapshot) => {
                     const data = snapshot.val();
                     if (data) updateDashboard(data, user.uid);
-                    document.getElementById('loader').style.display = 'none';
                 });
-                
-                // Load Admin Message
                 onValue(ref(db, 'admin/message'), (snap) => {
                     const val = snap.val();
                     if(val) {
                         adminMsgData = val;
-                        // Check read status logic here if needed
                         document.getElementById('msgBadge').style.display = 'flex';
                         document.getElementById('msgBadge').innerText = '1';
                     }
                 });
-
             } else {
                 window.location.href = "register_login.html";
             }
         });
 
-        // --- Dashboard Update Logic ---
+        // Dashboard Update
         function updateDashboard(data, uid) {
-            // Balance & Stats
             document.getElementById('currBal').innerText = "৳" + (data.balance || 0).toFixed(2);
             document.getElementById('lifeBal').innerText = "৳" + (data.lifetimeBalance || 0).toFixed(2);
             document.getElementById('totalRef').innerText = data.totalReferrals || 0;
@@ -376,48 +350,28 @@
             const taskCount = data.taskCount || 0;
             document.getElementById('taskCountDisplay').innerText = taskCount + "/2";
 
-            // Active/Pending Logic
             const statusBox = document.getElementById('statusBox');
             const statusIcon = document.getElementById('statusIcon');
             const statusTitle = document.getElementById('statusTitle');
             const statusDesc = document.getElementById('statusDesc');
             
             if (taskCount >= 2) {
-                // ACTIVE STATE
-                statusBox.classList.remove('pending');
-                statusBox.classList.add('active');
+                statusBox.classList.remove('pending'); statusBox.classList.add('active');
                 statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
-                
-                statusTitle.setAttribute('data-en', 'Account Elite Active');
-                statusTitle.setAttribute('data-bn', 'অ্যাকাউন্ট এলিট সক্রিয়');
-                
-                statusDesc.setAttribute('data-en', 'All features are unlocked');
-                statusDesc.setAttribute('data-bn', 'সব ফিচার আনলক করা হয়েছে');
-
-                // Unlock Buttons
-                document.querySelectorAll('.restricted').forEach(btn => {
-                    btn.classList.remove('locked');
-                });
-
-                // Update DB Status if needed
+                statusTitle.setAttribute('data-en', 'Account Elite Active'); statusTitle.setAttribute('data-bn', 'অ্যাকাউন্ট এলিট সক্রিয়');
+                statusDesc.setAttribute('data-en', 'All features are unlocked'); statusDesc.setAttribute('data-bn', 'সব ফিচার আনলক করা হয়েছে');
+                document.querySelectorAll('.restricted').forEach(btn => btn.classList.remove('locked'));
                 if(data.status === 'pending') update(ref(db, 'users/' + uid), { status: 'active' });
-
             } else {
-                // PENDING STATE
-                statusBox.classList.add('pending');
-                statusBox.classList.remove('active');
+                statusBox.classList.add('pending'); statusBox.classList.remove('active');
                 statusIcon.innerHTML = '<i class="fas fa-lock"></i>';
-                
-                statusTitle.setAttribute('data-en', 'Activation Pending');
-                statusTitle.setAttribute('data-bn', 'অ্যাক্টিভেশন বাকি');
-                
-                statusDesc.setAttribute('data-en', `Complete 2 tasks (${taskCount}/2)`);
-                statusDesc.setAttribute('data-bn', `২ টি টাস্ক করুন (${taskCount}/2)`);
+                statusTitle.setAttribute('data-en', 'Activation Pending'); statusTitle.setAttribute('data-bn', 'অ্যাক্টিভেশন বাকি');
+                statusDesc.setAttribute('data-en', `Complete 2 tasks (${taskCount}/2)`); statusDesc.setAttribute('data-bn', `২ টি টাস্ক করুন (${taskCount}/2)`);
             }
-            updateLangUI(); // Refresh text based on new status
+            updateLangUI();
         }
 
-        // --- Language System ---
+        // Language
         window.toggleLang = () => {
             currentLang = currentLang === 'en' ? 'bn' : 'en';
             localStorage.setItem('lang', currentLang);
@@ -431,14 +385,13 @@
             });
         }
 
-        // --- Banner Slider ---
+        // Banner
         function setupBanner() {
             let slideIndex = 0;
             const slidesContainer = document.getElementById('bannerSlide');
             const dotsContainer = document.getElementById('bannerDots');
             const slides = slidesContainer.children;
             
-            // Generate dots
             dotsContainer.innerHTML = '';
             for(let i=0; i<slides.length; i++) {
                 let dot = document.createElement('div');
@@ -446,28 +399,20 @@
                 dot.onclick = () => showSlide(i);
                 dotsContainer.appendChild(dot);
             }
-
             function showSlide(index) {
                 slideIndex = index;
                 if(slideIndex >= slides.length) slideIndex = 0;
                 if(slideIndex < 0) slideIndex = slides.length - 1;
-                
                 slidesContainer.style.transform = `translateX(${-slideIndex * 100}%)`;
-                
                 Array.from(document.getElementsByClassName('dot')).forEach(d => d.classList.remove('active'));
                 document.getElementsByClassName('dot')[slideIndex].classList.add('active');
             }
-
-            setInterval(() => showSlide(slideIndex + 1), 5000); // Auto slide
+            setInterval(() => showSlide(slideIndex + 1), 5000);
         }
 
-        // --- Message Logic ---
+        // Messages
         window.showMessages = () => {
-            if(!adminMsgData) {
-                alert("No new messages");
-                return;
-            }
-            
+            if(!adminMsgData) { alert("No new messages"); return; }
             const modal = document.getElementById('msgModal');
             document.getElementById('msgContent').innerText = adminMsgData.text || "Welcome to Task28 Elite";
             modal.style.display = 'flex';
@@ -476,17 +421,12 @@
             let timeLeft = 12;
             const timerBar = document.getElementById('timerBar');
             const timerText = document.getElementById('timerText');
-            
             timerBar.style.width = '100%';
-            setTimeout(() => { timerBar.style.width = '0%'; }, 50); // Start animation
+            setTimeout(() => { timerBar.style.width = '0%'; }, 50); 
 
             const interval = setInterval(() => {
-                timeLeft--;
-                timerText.innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(interval);
-                    closeModal();
-                }
+                timeLeft--; timerText.innerText = timeLeft;
+                if(timeLeft <= 0) { clearInterval(interval); closeModal(); }
             }, 1000);
             window.msgInterval = interval;
         };
