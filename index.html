@@ -6,85 +6,51 @@
     <title>Task28 Elite - Loading</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #050505;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 0; padding: 0;
+            background-color: #000;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
             font-family: 'Segoe UI', sans-serif;
-            color: #ffd700;
-            overflow: hidden;
         }
-        .loader-container {
-            text-align: center;
-            animation: fadeIn 1s ease-in;
+        .logo-container { text-align: center; position: relative; z-index: 10; }
+        .logo {
+            font-size: 4rem; font-weight: 900;
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            letter-spacing: 5px; animation: glow 2s infinite alternate;
         }
-        .logo-text {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: 4px;
-            background: linear-gradient(to right, #ffd700, #bf953f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        .elite-badge {
+            font-size: 1rem; color: #fff; letter-spacing: 15px;
+            margin-top: -10px; opacity: 0;
+            animation: slideUp 1s ease-out forwards 0.5s;
         }
-        .elite {
-            font-size: 1.2rem;
-            color: #fff;
-            letter-spacing: 12px;
-            margin-top: 5px;
-            text-transform: uppercase;
-            opacity: 0.8;
+        .loader-line {
+            width: 200px; height: 2px; background: #222;
+            margin-top: 40px; border-radius: 5px; overflow: hidden; position: relative;
         }
-        .loading-bar {
-            width: 220px;
-            height: 3px;
-            background: #222;
-            margin: 40px auto;
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
-        }
-        .progress {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 0%;
+        .loader-progress {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%;
             background: #ffd700;
             box-shadow: 0 0 10px #ffd700;
-            animation: load 3s ease-in-out forwards;
+            animation: progress 2.5s ease-in-out forwards;
         }
-
-        @keyframes load {
-            0% { width: 0%; }
-            50% { width: 60%; }
-            100% { width: 100%; }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes glow { from { text-shadow: 0 0 10px #b38728; } to { text-shadow: 0 0 30px #fcf6ba; } }
+        @keyframes slideUp { to { opacity: 0.8; margin-top: 5px; } }
+        @keyframes progress { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
     </style>
 </head>
 <body>
-
-<div class="loader-container">
-    <div class="logo-text">TASK28</div>
-    <div class="elite">ELITE VERSION</div>
-    <div class="loading-bar">
-        <div class="progress"></div>
+    <div class="logo-container">
+        <div class="logo">TASK28</div>
+        <div class="elite-badge">ELITE VERSION</div>
+        <div class="loader-line">
+            <div class="loader-progress"></div>
+        </div>
     </div>
-</div>
-
-<script>
-    // 3 সেকেন্ড পর রিডাইরেক্ট
-    setTimeout(() => {
-        window.location.href = "register_login.html";
-    }, 3000);
-</script>
-
+    <script>
+        setTimeout(() => { window.location.href = "register_login.html"; }, 2800);
+    </script>
 </body>
 </html>
