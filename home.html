@@ -4,335 +4,207 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task28 Elite - Dashboard</title>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-        :root {
-            --primary-gold: #FFD700;
-            --gold-gradient: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
-            --dark-bg: #0a0a0a;
-            --card-bg: #161616;
-            --text-light: #e0e0e0;
-            --text-muted: #888;
-        }
-
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--dark-bg); color: var(--text-light); margin: 0; padding-bottom: 80px; }
-
-        /* NAVBAR */
-        .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: rgba(22, 22, 22, 0.95);
-            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .brand {
-            font-size: 1.2rem; font-weight: 800; background: var(--gold-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;
-        }
-        .nav-icons { display: flex; align-items: center; gap: 15px; }
-        .icon-btn { position: relative; font-size: 1.2rem; color: var(--primary-gold); cursor: pointer; }
-        .profile-circle {
-            width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--primary-gold);
-            background-color: #333; background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png');
-            background-size: cover; background-position: center; cursor: pointer;
-        }
-        .badge-dot {
-            position: absolute; top: -2px; right: -2px; width: 8px; height: 8px;
-            background-color: red; border-radius: 50%; display: none;
-        }
-        .lang-switch {
-            font-size: 10px; border: 1px solid var(--primary-gold); padding: 2px 6px;
-            border-radius: 4px; color: var(--primary-gold); cursor: pointer;
-        }
-
-        /* ADMIN MSG */
-        #admin-msg-box {
-            background: rgba(255, 215, 0, 0.1); border-left: 3px solid var(--primary-gold);
-            color: #fff; padding: 10px; margin: 10px; font-size: 0.9rem;
-            border-radius: 4px; display: none;
-        }
-
-        /* USER STATUS */
-        .user-info { text-align: center; margin: 20px 0; }
-        .user-name { font-size: 1.4rem; font-weight: bold; color: #fff; }
-        .status-pill {
-            display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem;
-            margin-top: 5px; font-weight: bold; box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-        .active-user { background: linear-gradient(90deg, #11998e, #38ef7d); color: white; }
-        .inactive-user { background: linear-gradient(90deg, #cb2d3e, #ef473a); color: white; }
-
-        /* STATS GRID */
-        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; margin-bottom: 25px; }
-        .stat-card {
-            background: var(--card-bg); border: 1px solid #333; border-radius: 12px;
-            padding: 15px; text-align: center; position: relative; overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        .stat-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--gold-gradient);
-        }
-        .stat-val { font-size: 1.3rem; font-weight: 800; color: var(--primary-gold); margin: 5px 0; }
-        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* BANNER */
-        .banner-wrapper {
-            width: 94%; height: 160px; margin: 0 auto 25px auto; border-radius: 15px;
-            overflow: hidden; box-shadow: 0 10px 20px rgba(255, 215, 0, 0.15); border: 1px solid #333;
-        }
-        .banner-img { width: 100%; height: 100%; object-fit: cover; display: none; animation: fade 1.5s; }
-        .active-banner { display: block; }
-        @keyframes fade { from {opacity: 0.6} to {opacity: 1} }
-
-        /* MENU BUTTONS */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 15px; }
-        .menu-item {
-            background: var(--card-bg); border-radius: 12px; padding: 15px 5px;
-            text-align: center; color: white; text-decoration: none; border: 1px solid #2a2a2a; position: relative;
-        }
-        .menu-icon {
-            font-size: 1.5rem; margin-bottom: 8px; background: var(--gold-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .menu-text { font-size: 0.8rem; font-weight: 500; }
+        :root { --gold: #FFD700; --dark: #050505; --card: #141414; }
+        body { background: var(--dark); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
         
-        /* LOCK */
-        .locked { opacity: 0.5; filter: grayscale(100%); pointer-events: none; }
-        .lock-overlay { position: absolute; top: 5px; right: 5px; color: #ef473a; font-size: 12px; }
+        /* Navbar */
+        .nav { display: flex; justify-content: space-between; padding: 15px 20px; background: rgba(20,20,20,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
+        .brand { font-size: 1.2rem; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
+        .p-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--gold); background-size: cover; cursor: pointer; }
+        .locked-profile { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
 
+        /* User Info */
+        .hero { text-align: center; padding: 20px; }
+        .u-name { font-size: 1.5rem; font-weight: bold; }
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
+        .b-active { background: linear-gradient(90deg, #11998e, #38ef7d); box-shadow: 0 0 10px #11998e; }
+        .b-inactive { background: #333; color: #aaa; border: 1px solid #555; }
+
+        /* Stats */
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #222; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .card h2 { margin: 5px 0; color: var(--gold); font-size: 1.4rem; }
+        .card p { margin: 0; font-size: 0.75rem; color: #888; text-transform: uppercase; }
+
+        /* Banner */
+        .banner { width: 92%; height: 140px; margin: 20px auto; border-radius: 10px; overflow: hidden; border: 1px solid #333; position: relative; }
+        .slide { width: 100%; height: 100%; object-fit: cover; display: none; animation: fade 1s; }
+        .active-slide { display: block; }
+        @keyframes fade { from {opacity: 0.5} to {opacity: 1} }
+
+        /* Menu */
+        .menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 15px; }
+        .m-item { background: var(--card); padding: 15px 5px; border-radius: 10px; text-align: center; border: 1px solid #222; color: #fff; text-decoration: none; position: relative; transition: 0.3s; }
+        .m-item:active { transform: scale(0.95); }
+        .m-item i { font-size: 1.5rem; margin-bottom: 8px; color: var(--gold); }
+        .m-item span { font-size: 0.8rem; display: block; }
+
+        /* Lock System */
+        .locked { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
+        .lock-icon { position: absolute; top: 5px; right: 5px; color: #ff4444; font-size: 12px; }
+
+        /* Admin Msg */
+        #notify { background: rgba(255, 215, 0, 0.15); border-left: 4px solid var(--gold); padding: 10px; margin: 15px; border-radius: 5px; display: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="brand">TASK28 ELITE</div>
-        <div class="nav-icons">
-            <span class="lang-switch" onclick="toggleLang()" id="langBtn">EN</span>
-            <div class="icon-btn" onclick="showNotif()">
-                <i class="fas fa-bell"></i>
-                <div class="badge-dot" id="notif-dot"></div>
-            </div>
-            <a href="profile.html" id="profile-link" class="locked">
-                <div class="profile-circle" id="profile-img"></div>
-            </a>
-        </div>
-    </nav>
-
-    <!-- NOTIFICATION -->
-    <div id="admin-msg-box"></div>
-
-    <!-- WELCOME -->
-    <div class="user-info">
-        <div style="font-size: 0.9rem; color: #aaa;">Welcome,</div>
-        <div class="user-name" id="u_name">Loading...</div>
-        <div class="status-pill inactive-user" id="status-badge">
-            <span id="status-txt">Inactive</span>
-        </div>
-        <div style="margin-top: 5px; font-size: 0.8rem; color: var(--primary-gold);">
-            Task: <span id="task-count">0</span>/2
-        </div>
+<div class="nav">
+    <div class="brand">TASK28 ELITE</div>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <i class="fas fa-language" onclick="toggleLang()" style="font-size:1.5rem; color:var(--gold);"></i>
+        <a href="profile.html" id="p-link" class="locked-profile">
+            <div class="p-icon" id="p-img" style="background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png');"></div>
+        </a>
     </div>
+</div>
 
-    <!-- STATS (TOP) -->
-    <section class="stats-container">
-        <div class="stat-card">
-            <div class="stat-val">৳ <span id="curr-bal">0</span></div>
-            <div class="stat-label" id="lbl_curr">Current Balance</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-val">৳ <span id="life-bal">0</span></div>
-            <div class="stat-label" id="lbl_life">Lifetime Income</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-val" id="total-ref">0</div>
-            <div class="stat-label" id="lbl_total_ref">Total Referral</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-val" id="today-ref">0</div>
-            <div class="stat-label" id="lbl_today_ref">Today Referral</div>
-        </div>
-    </section>
+<div id="notify"></div>
 
-    <!-- BANNER (MIDDLE) -->
-    <section class="banner-wrapper">
-        <img src="https://via.placeholder.com/600x250/000000/ffd700?text=Premium+Task" class="banner-img active-banner">
-        <img src="https://via.placeholder.com/600x250/111111/ffd700?text=Elite+Earnings" class="banner-img">
-        <img src="https://via.placeholder.com/600x250/222222/ffd700?text=Refer+&+Earn" class="banner-img">
-    </section>
+<div class="hero">
+    <div style="font-size: 0.9rem; color: #888;">Welcome Back,</div>
+    <div class="u-name" id="u_name">Loading...</div>
+    <div class="badge b-inactive" id="status-badge">Inactive (Pending)</div>
+    <div style="margin-top:5px; font-size:0.8rem; color:var(--gold);">Tasks: <span id="t-count">0</span>/2</div>
+</div>
 
-    <!-- BUTTONS (BOTTOM) -->
-    <section class="menu-grid">
-        <a href="task.html" class="menu-item">
-            <i class="fas fa-fingerprint menu-icon"></i>
-            <div class="menu-text" id="btn_task">Start Task</div>
-        </a>
+<div class="stats">
+    <div class="card"><h2>৳ <span id="bal">0</span></h2><p id="l_bal">Balance</p></div>
+    <div class="card"><h2>৳ <span id="lbal">0</span></h2><p id="l_life">Lifetime</p></div>
+    <div class="card"><h2 id="tref">0</h2><p id="l_ref">Total Ref</p></div>
+    <div class="card"><h2 id="dref">0</h2><p id="l_dref">Today Ref</p></div>
+</div>
 
-        <a href="withdraw.html" class="menu-item locked" id="link-withdraw">
-            <i class="fas fa-wallet menu-icon"></i> <i class="fas fa-lock lock-overlay"></i>
-            <div class="menu-text" id="btn_withdraw">Withdraw</div>
-        </a>
+<div class="banner">
+    <img src="https://via.placeholder.com/600x200/000000/ffd700?text=Premium+Access" class="slide active-slide">
+    <img src="https://via.placeholder.com/600x200/111111/ffd700?text=Elite+Earnings" class="slide">
+    <img src="https://via.placeholder.com/600x200/222222/ffd700?text=Refer+Now" class="slide">
+</div>
 
-        <a href="monthly_weekly.html" class="menu-item locked" id="link-monthly">
-            <i class="fas fa-calendar-star menu-icon"></i> <i class="fas fa-lock lock-overlay"></i>
-            <div class="menu-text" id="btn_plan">Plans</div>
-        </a>
+<div class="menu">
+    <a href="task.html" class="m-item"><i class="fas fa-fingerprint"></i><span id="b_task">Start Task</span></a>
+    
+    <a href="withdraw.html" class="m-item locked" id="btn-wd">
+        <i class="fas fa-wallet"></i><i class="fas fa-lock lock-icon"></i><span id="b_with">Withdraw</span>
+    </a>
+    
+    <a href="monthly_weekly.html" class="m-item locked" id="btn-pl">
+        <i class="fas fa-calendar-check"></i><i class="fas fa-lock lock-icon"></i><span id="b_plan">Plans</span>
+    </a>
+    
+    <a href="referral.html" class="m-item locked" id="btn-ref">
+        <i class="fas fa-users"></i><i class="fas fa-lock lock-icon"></i><span id="b_ref">Referral</span>
+    </a>
+    
+    <a href="history.html" class="m-item locked" id="btn-his">
+        <i class="fas fa-history"></i><i class="fas fa-lock lock-icon"></i><span id="b_hist">History</span>
+    </a>
 
-        <a href="referral.html" class="menu-item locked" id="link-referral">
-            <i class="fas fa-users menu-icon"></i> <i class="fas fa-lock lock-overlay"></i>
-            <div class="menu-text" id="btn_ref">Referral</div>
-        </a>
+    <div class="m-item" onclick="firebase.auth().signOut()"><i class="fas fa-sign-out-alt" style="color:#ff4444;"></i><span>Logout</span></div>
+</div>
 
-        <a href="history.html" class="menu-item locked" id="link-history">
-            <i class="fas fa-history menu-icon"></i> <i class="fas fa-lock lock-overlay"></i>
-            <div class="menu-text" id="btn_hist">History</div>
-        </a>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXMFqxIe8IrZkzUx2YVMTvVXQmIAhtruc",
+        authDomain: "love-1-6cdb1.firebaseapp.com",
+        databaseURL: "https://love-1-6cdb1-default-rtdb.firebaseio.com",
+        projectId: "love-1-6cdb1",
+        storageBucket: "love-1-6cdb1.firebasestorage.app",
+        messagingSenderId: "949848083048",
+        appId: "1:949848083048:web:ced52526264da1dcf4c9dd"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let lang = 'en';
+    const dict = {
+        en: { act: "Active - You", inact: "Inactive (Pending)", bal: "Current Balance", life: "Lifetime Income", tr: "Total Ref", dr: "Today Ref", bt: "Start Task", bw: "Withdraw", bp: "Plans", br: "Referral", bh: "History" },
+        bn: { act: "অ্যাকাউন্ট সক্রিয়", inact: "অ্যাকাউন্ট পেন্ডিং", bal: "বর্তমান ব্যালেন্স", life: "মোট আয়", tr: "মোট রেফার", dr: "আজকের রেফার", bt: "কাজ শুরু", bw: "উত্তোলন", bp: "প্ল্যানসমূহ", br: "রেফারেল", bh: "ইতিহাস" }
+    };
+
+    auth.onAuthStateChanged(user => {
+        if(!user) return window.location.href = "register_login.html";
         
-        <div class="menu-item" onclick="logout()">
-            <i class="fas fa-sign-out-alt menu-icon" style="background:none; color:#ef473a; -webkit-text-fill-color:#ef473a;"></i>
-            <div class="menu-text" style="color:#ef473a;">Logout</div>
-        </div>
-    </section>
+        db.ref('users/' + user.uid).on('value', snap => {
+            const d = snap.val();
+            if(!d) return;
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCXMFqxIe8IrZkzUx2YVMTvVXQmIAhtruc",
-            authDomain: "love-1-6cdb1.firebaseapp.com",
-            databaseURL: "https://love-1-6cdb1-default-rtdb.firebaseio.com",
-            projectId: "love-1-6cdb1",
-            storageBucket: "love-1-6cdb1.firebasestorage.app",
-            messagingSenderId: "949848083048",
-            appId: "1:949848083048:web:ced52526264da1dcf4c9dd"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+            // Data Fill (Using Optional Chaining ?. to prevent errors)
+            document.getElementById('u_name').innerText = d.firstName || "User";
+            document.getElementById('bal').innerText = d.balance || 0;
+            document.getElementById('lbal').innerText = d.lifetimeBalance || 0;
+            document.getElementById('tref').innerText = d.totalReferrals || 0;
+            document.getElementById('dref').innerText = d.todayReferrals || 0;
+            document.getElementById('t-count').innerText = d.tasksCompleted || 0;
+            
+            if(d.profileImage) document.getElementById('p-img').style.backgroundImage = `url('${d.profileImage}')`;
 
-        let currentLang = 'en';
-        let userData = null;
-
-        const translations = {
-            en: {
-                active: "Active - You", inactive: "Inactive - Pending",
-                curr: "Current Balance", life: "Lifetime Income",
-                tref: "Total Referral", dref: "Today Referral",
-                btask: "Start Task", bwith: "Withdraw", bplan: "Plans",
-                bref: "Referral", bhist: "History"
-            },
-            bn: {
-                active: "সক্রিয় - আপনি", inactive: "নিষ্ক্রিয় - পেন্ডিং",
-                curr: "বর্তমান ব্যালেন্স", life: "মোট আয়",
-                tref: "মোট রেফারেল", dref: "আজকের রেফারেল",
-                btask: "কাজ শুরু করুন", bwith: "উত্তোলন", bplan: "প্ল্যান",
-                bref: "রেফারেল", bhist: "ইতিহাস"
-            }
-        };
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                db.ref('users/' + user.uid).on('value', (snap) => {
-                    userData = snap.val();
-                    if(userData) updateUI(userData);
+            // Active Logic
+            const active = (d.tasksCompleted >= 2);
+            const badge = document.getElementById('status-badge');
+            
+            if(active) {
+                badge.className = "badge b-active";
+                badge.innerText = (lang === 'en') ? dict.en.act : dict.bn.act;
+                
+                // Unlock Buttons
+                ['btn-wd', 'btn-pl', 'btn-ref', 'btn-his'].forEach(id => {
+                    document.getElementById(id).classList.remove('locked');
+                    document.getElementById(id).querySelector('.lock-icon').style.display = 'none';
                 });
-                listenMessages();
+                document.getElementById('p-link').classList.remove('locked-profile');
             } else {
-                window.location.href = "register_login.html";
+                badge.className = "badge b-inactive";
+                badge.innerText = (lang === 'en') ? dict.en.inact : dict.bn.inact;
             }
+            updateLang();
         });
 
-        function updateUI(data) {
-            document.getElementById('u_name').innerText = data.firstName;
-            document.getElementById('curr-bal').innerText = data.balance;
-            document.getElementById('life-bal').innerText = data.lifetimeBalance;
-            document.getElementById('total-ref').innerText = data.totalReferrals;
-            document.getElementById('today-ref').innerText = data.todayReferrals;
-            document.getElementById('task-count').innerText = data.tasksCompleted;
-
-            if(data.profileImage) document.getElementById('profile-img').style.backgroundImage = `url('${data.profileImage}')`;
-
-            const isUnlocked = (data.tasksCompleted >= 2);
-            const statusEl = document.getElementById('status-badge');
-            const lockedIds = ['link-withdraw', 'link-monthly', 'link-referral', 'link-history', 'profile-link'];
-
-            if(isUnlocked) {
-                statusEl.className = "status-pill active-user";
-                lockedIds.forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) {
-                        el.classList.remove('locked');
-                        const lock = el.querySelector('.lock-overlay');
-                        if(lock) lock.style.display = 'none';
-                    }
-                });
-            } else {
-                statusEl.className = "status-pill inactive-user";
+        // Admin Message Listener
+        db.ref('admin_messages').limitToLast(1).on('value', s => {
+            const data = s.val();
+            if(data) {
+                const msg = Object.values(data)[0].text;
+                const n = document.getElementById('notify');
+                n.style.display = 'block'; n.innerHTML = `<i class="fas fa-bell"></i> Admin: ${msg}`;
+                setTimeout(() => n.style.display = 'none', 12000);
             }
-            applyLanguage();
-        }
+        });
+    });
 
-        function toggleLang() {
-            currentLang = (currentLang === 'en') ? 'bn' : 'en';
-            document.getElementById('langBtn').innerText = currentLang.toUpperCase();
-            applyLanguage();
-        }
+    function toggleLang() {
+        lang = (lang === 'en') ? 'bn' : 'en';
+        updateLang();
+    }
 
-        function applyLanguage() {
-            const t = translations[currentLang];
-            const setText = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
+    function updateLang() {
+        const t = dict[lang];
+        document.getElementById('l_bal').innerText = t.bal;
+        document.getElementById('l_life').innerText = t.life;
+        document.getElementById('l_ref').innerText = t.tr;
+        document.getElementById('l_dref').innerText = t.dr;
+        document.getElementById('b_task').innerText = t.bt;
+        document.getElementById('b_with').innerText = t.bw;
+        document.getElementById('b_plan').innerText = t.bp;
+        document.getElementById('b_ref').innerText = t.br;
+        document.getElementById('b_hist').innerText = t.bh;
+    }
 
-            setText('lbl_curr', t.curr); setText('lbl_life', t.life);
-            setText('lbl_total_ref', t.tref); setText('lbl_today_ref', t.dref);
-            setText('btn_task', t.btask); setText('btn_withdraw', t.bwith);
-            setText('btn_plan', t.bplan); setText('btn_ref', t.bref); setText('btn_hist', t.bhist);
-
-            const statusTxt = document.getElementById('status-txt');
-            if(userData && userData.tasksCompleted >= 2) statusTxt.innerText = t.active;
-            else statusTxt.innerText = t.inactive;
-        }
-
-        let slideIndex = 0;
-        const slides = document.getElementsByClassName("banner-img");
-        function showSlides() {
-            if(slides.length === 0) return;
-            for (let i = 0; i < slides.length; i++) slides[i].classList.remove("active-banner");
-            slideIndex++;
-            if (slideIndex > slides.length) slideIndex = 1;
-            slides[slideIndex-1].classList.add("active-banner");
-            setTimeout(showSlides, 4000);
-        }
-        showSlides();
-
-        function listenMessages() {
-            db.ref('admin_messages').limitToLast(1).on('value', snap => {
-                const data = snap.val();
-                if(data) {
-                    const key = Object.keys(data)[0];
-                    const msg = data[key].text;
-                    const box = document.getElementById('admin-msg-box');
-                    document.getElementById('notif-dot').style.display = 'block';
-                    if(box) {
-                        box.innerText = "Admin: " + msg;
-                        box.style.display = 'block';
-                        setTimeout(() => { box.style.display = 'none'; }, 12000);
-                    }
-                }
-            });
-        }
-
-        function showNotif() {
-            document.getElementById('admin-msg-box').style.display = 'block';
-            document.getElementById('notif-dot').style.display = 'none';
-        }
-
-        function logout() {
-            auth.signOut().then(() => window.location.href = 'index.html');
-        }
-    </script>
+    // Banner Slider
+    let idx = 0;
+    const slides = document.querySelectorAll('.slide');
+    function cycle() {
+        slides.forEach(s => s.classList.remove('active-slide'));
+        idx = (idx + 1) % slides.length;
+        slides[idx].classList.add('active-slide');
+    }
+    setInterval(cycle, 4000);
+</script>
 </body>
 </html>
