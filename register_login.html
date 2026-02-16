@@ -4,124 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task28 Elite - Access</title>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background: #0a0a0a;
-            font-family: 'Segoe UI', sans-serif;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            font-family: 'Segoe UI', sans-serif; color: #fff;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
         }
-        .container {
-            width: 85%;
-            max-width: 400px;
-            background: #141414;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.7);
-            border: 1px solid #333;
+        .glass-card {
+            width: 90%; max-width: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 30px; border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #ffd700;
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
-        .tabs {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #333;
-        }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            width: 50%;
-            text-align: center;
-            transition: 0.3s;
-            color: #666;
-            font-weight: bold;
-        }
-        .tab.active {
-            border-bottom: 2px solid #ffd700;
-            color: #ffd700;
-        }
-        .form-group { margin-bottom: 15px; }
+        .title { text-align: center; font-size: 2rem; font-weight: 800; color: #ffd700; margin-bottom: 20px; letter-spacing: 2px; }
+        .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: #888; transition: 0.3s; font-weight: bold; }
+        .tab.active { color: #ffd700; border-bottom: 2px solid #ffd700; }
+        
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #ffd700; }
         input {
-            width: 100%;
-            padding: 14px;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 8px;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; padding: 12px 12px 12px 40px;
+            background: rgba(0,0,0,0.5); border: 1px solid #333;
+            color: #fff; border-radius: 8px; outline: none; box-sizing: border-box;
         }
-        input:focus {
-            border-color: #ffd700;
-            background: #252525;
+        input:focus { border-color: #ffd700; }
+        
+        .btn-main {
+            width: 100%; padding: 14px; margin-top: 10px;
+            background: linear-gradient(45deg, #ffd700, #b8860b);
+            border: none; border-radius: 8px; color: #000; font-weight: bold;
+            font-size: 1rem; cursor: pointer; transition: 0.3s;
         }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(45deg, #ffd700, #ffaa00);
-            border: none;
-            color: black;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 15px;
-            text-transform: uppercase;
-        }
-        button:hover { transform: scale(0.98); }
+        .btn-main:active { transform: scale(0.98); }
         .hidden { display: none; }
-        .error { color: #ff4444; font-size: 12px; text-align: center; margin-top: 15px; }
+        #msg { text-align: center; margin-top: 15px; font-size: 0.9rem; min-height: 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">TASK28</div>
+<div class="glass-card">
+    <div class="title">TASK28</div>
     <div class="tabs">
         <div class="tab active" onclick="switchTab('login')">LOGIN</div>
         <div class="tab" onclick="switchTab('register')">REGISTER</div>
     </div>
 
-    <!-- Login Form -->
+    <!-- Login -->
     <div id="loginForm">
-        <div class="form-group"><input type="number" id="loginPhone" placeholder="Phone Number"></div>
-        <div class="form-group"><input type="password" id="loginPass" placeholder="Password"></div>
-        <button onclick="loginUser()">Login Account</button>
+        <div class="input-group"><i class="fas fa-phone"></i><input type="number" id="lPhone" placeholder="Phone Number"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="lPass" placeholder="Password"></div>
+        <button class="btn-main" onclick="handleLogin()">LOGIN</button>
     </div>
 
-    <!-- Register Form -->
-    <div id="registerForm" class="hidden">
-        <div class="form-group"><input type="text" id="regFname" placeholder="First Name"></div>
-        <div class="form-group"><input type="text" id="regLname" placeholder="Last Name"></div>
-        <div class="form-group"><input type="number" id="regPhone" placeholder="Phone Number"></div>
-        <div class="form-group"><input type="password" id="regPass" placeholder="Password"></div>
-        <div class="form-group"><input type="password" id="regConfPass" placeholder="Confirm Password"></div>
-        <div class="form-group"><input type="text" id="regRef" placeholder="Referral Code (Optional)"></div>
-        <button onclick="registerUser()">Create Account</button>
+    <!-- Register -->
+    <div id="regForm" class="hidden">
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="rFname" placeholder="First Name"></div>
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="rLname" placeholder="Last Name"></div>
+        <div class="input-group"><i class="fas fa-phone"></i><input type="number" id="rPhone" placeholder="Phone Number"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="rPass" placeholder="Password"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="rConf" placeholder="Confirm Password"></div>
+        <div class="input-group"><i class="fas fa-code"></i><input type="text" id="rRef" placeholder="Referral Code (Optional)"></div>
+        <button class="btn-main" onclick="handleRegister()">CREATE ACCOUNT</button>
     </div>
     
-    <div id="msg" class="error"></div>
+    <div id="msg"></div>
 </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCXMFqxIe8IrZkzUx2YVMTvVXQmIAhtruc",
         authDomain: "love-1-6cdb1.firebaseapp.com",
@@ -135,76 +92,67 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    function switchTab(tab) {
-        document.getElementById('msg').innerText = "";
-        const loginForm = document.getElementById('loginForm');
-        const regForm = document.getElementById('registerForm');
-        const tabs = document.querySelectorAll('.tab');
+    function showMsg(text, color) {
+        const m = document.getElementById('msg');
+        m.style.color = color; m.innerText = text;
+    }
 
-        if(tab === 'login') {
-            loginForm.classList.remove('hidden');
-            regForm.classList.add('hidden');
-            tabs[0].classList.add('active');
-            tabs[1].classList.remove('active');
+    function switchTab(t) {
+        document.getElementById('msg').innerText = "";
+        if(t==='login'){
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('regForm').classList.add('hidden');
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.querySelectorAll('.tab')[1].classList.remove('active');
         } else {
-            loginForm.classList.add('hidden');
-            regForm.classList.remove('hidden');
-            tabs[0].classList.remove('active');
-            tabs[1].classList.add('active');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('regForm').classList.remove('hidden');
+            document.querySelectorAll('.tab')[0].classList.remove('active');
+            document.querySelectorAll('.tab')[1].classList.add('active');
         }
     }
 
-    function registerUser() {
-        const fname = document.getElementById('regFname').value;
-        const lname = document.getElementById('regLname').value;
-        const phone = document.getElementById('regPhone').value;
-        const pass = document.getElementById('regPass').value;
-        const confPass = document.getElementById('regConfPass').value;
-        const refCode = document.getElementById('regRef').value || "ADMIN";
+    function handleRegister() {
+        const fname = document.getElementById('rFname').value;
+        const lname = document.getElementById('rLname').value;
+        const phone = document.getElementById('rPhone').value;
+        const pass = document.getElementById('rPass').value;
+        const conf = document.getElementById('rConf').value;
+        const ref = document.getElementById('rRef').value || "ADMIN";
 
-        if(pass !== confPass) { document.getElementById('msg').innerText = "Passwords do not match!"; return; }
-        if(phone.length < 11) { document.getElementById('msg').innerText = "Invalid Phone Number!"; return; }
+        if(!fname || !lname || !phone || !pass) return showMsg("All fields required!", "red");
+        if(pass !== conf) return showMsg("Passwords do not match!", "red");
+        if(phone.length < 11) return showMsg("Invalid Phone Number!", "red");
 
+        showMsg("Creating Account...", "#ffd700");
         const email = phone + "@task28.com";
 
         auth.createUserWithEmailAndPassword(email, pass)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                db.ref('users/' + user.uid).set({
-                    firstName: fname,
-                    lastName: lname,
-                    phone: phone,
-                    password: pass,
-                    referralCode: refCode,
-                    myReferralCode: "REF" + Math.floor(1000 + Math.random() * 9000),
-                    balance: 0,
-                    lifetimeBalance: 0,
-                    totalReferrals: 0,
-                    todayReferrals: 0,
-                    tasksCompleted: 0,
-                    status: "pending",
-                    accountActive: false
-                }).then(() => {
-                    window.location.href = "home.html";
-                });
+            .then((cred) => {
+                const uid = cred.user.uid;
+                db.ref('users/' + uid).set({
+                    firstName: fname, lastName: lname, phone: phone,
+                    password: pass, referralCode: ref,
+                    myReferralCode: "REF" + Math.floor(100000 + Math.random() * 900000),
+                    balance: 0, lifetimeBalance: 0, totalReferrals: 0, todayReferrals: 0,
+                    tasksCompleted: 0, accountActive: false, joinDate: new Date().toISOString()
+                }).then(() => { window.location.href = "home.html"; });
             })
-            .catch((error) => { document.getElementById('msg').innerText = error.message; });
+            .catch((e) => showMsg(e.message, "red"));
     }
 
-    function loginUser() {
-        const phone = document.getElementById('loginPhone').value;
-        const pass = document.getElementById('loginPass').value;
-        const email = phone + "@task28.com";
-
-        auth.signInWithEmailAndPassword(email, pass)
-            .then(() => { window.location.href = "home.html"; })
-            .catch((error) => { document.getElementById('msg').innerText = "Login Failed: Check credentials"; });
+    function handleLogin() {
+        const phone = document.getElementById('lPhone').value;
+        const pass = document.getElementById('lPass').value;
+        if(!phone || !pass) return showMsg("Enter Phone & Password", "red");
+        
+        showMsg("Logging in...", "#ffd700");
+        auth.signInWithEmailAndPassword(phone + "@task28.com", pass)
+            .then(() => window.location.href = "home.html")
+            .catch(() => showMsg("Invalid Credentials or Network Error", "red"));
     }
 
-    auth.onAuthStateChanged((user) => {
-        if (user) { window.location.href = "home.html"; }
-    });
+    auth.onAuthStateChanged(user => { if(user) window.location.href = "home.html"; });
 </script>
-
 </body>
 </html>
